@@ -75,7 +75,7 @@ public final class PaginatedBuilder {
 						} else {
 							item = new ItemStack(Material.valueOf("SKULL_ITEM"));
 						}
-						AsyncMenuItemFillingEvent event = new AsyncMenuItemFillingEvent(this, members.get(index), item);
+						SyncMenuItemFillingEvent event = new SyncMenuItemFillingEvent(this, members.get(index), item);
 						Bukkit.getPluginManager().callEvent(event);
 						if (!contents.contains(event.getItem())) {
 							contents.add(event.getItem());
@@ -143,7 +143,7 @@ public final class PaginatedBuilder {
 		}
 
 		@EventHandler(priority = EventPriority.LOW)
-		public void onFill(AsyncMenuItemFillingEvent e) {
+		public void onFill(SyncMenuItemFillingEvent e) {
 			e.buildItem(() -> {
 				ItemStack item = e.getItem();
 				ItemMeta meta = item.getItemMeta();
