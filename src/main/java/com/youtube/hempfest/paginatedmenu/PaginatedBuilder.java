@@ -125,7 +125,7 @@ public final class PaginatedBuilder {
 						public void run() {
 							inv.addItem(event.getItem());
 						}
-					}.runTaskLater(plugin, 1);
+					}.runTask(plugin);
 				}
 			}
 		}
