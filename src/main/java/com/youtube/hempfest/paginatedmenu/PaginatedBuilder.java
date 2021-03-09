@@ -67,7 +67,23 @@ public final class PaginatedBuilder {
 	}
 
 	protected PaginatedBuilder adjust() {
-		//addMenuBorder();
+		if (border != null) {
+			int j;
+			for (j = 0; j < 10; j++) {
+				if (inv.getItem(j) == null)
+					inv.setItem(j, border);
+			}
+			inv.setItem(17, border);
+			inv.setItem(18, border);
+			inv.setItem(26, border);
+			inv.setItem(27, border);
+			inv.setItem(35, border);
+			inv.setItem(36, border);
+			for (j = 44; j < 54; j++) {
+				if (inv.getItem(j) == null)
+					inv.setItem(j, border);
+			}
+		}
 		if (collection == null) {
 			collection = new LinkedList<>();
 		}
@@ -84,29 +100,6 @@ public final class PaginatedBuilder {
 						item = new ItemStack(Material.valueOf("PLAYER_HEAD"));
 					} else {
 						item = new ItemStack(Material.valueOf("SKULL_ITEM"));
-					}
-					if (border != null) {
-						int j;
-						for (j = 0; j < 10; j++) {
-							if (inv.getItem(j) == null)
-								inv.setItem(j, border);
-						}
-						inv.setItem(17, border);
-						inv.setItem(18, border);
-						inv.setItem(26, border);
-						inv.setItem(27, border);
-						inv.setItem(35, border);
-						inv.setItem(36, border);
-						for (j = 44; j < 54; j++) {
-							if (inv.getItem(j) == null)
-								inv.setItem(j, border);
-						}
-						if (fill != null) {
-							for (int k = 0; k < 54; k++) {
-								if (inv.getItem(k) == null)
-									inv.setItem(k, fill);
-							}
-						}
 					}
 					ItemStack left = navLeft.keySet().stream().findFirst().orElse(null);
 					ItemStack right = navRight.keySet().stream().findFirst().orElse(null);
@@ -127,7 +120,12 @@ public final class PaginatedBuilder {
 				}
 			}
 		}
-		//setFillerGlass();
+		if (fill != null) {
+			for (int k = 0; k < 54; k++) {
+				if (inv.getItem(k) == null)
+					inv.setItem(k, fill);
+			}
+		}
 		return this;
 	}
 
@@ -234,6 +232,9 @@ public final class PaginatedBuilder {
 						} else {
 							p.sendMessage("Already on last page.");
 						}
+						e.setCancelled(true);
+					}
+					if (e.getCurrentItem().equals(builder.border) || e.getCurrentItem().equals(builder.fill)) {
 						e.setCancelled(true);
 					}
 				}
