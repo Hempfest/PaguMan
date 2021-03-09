@@ -58,6 +58,10 @@ public final class PaginatedBuilder {
 		return this;
 	}
 
+	public BorderElement addBorder() {
+		return new BorderElement(this);
+	}
+
 	public UUID getId() {
 		return id;
 	}
