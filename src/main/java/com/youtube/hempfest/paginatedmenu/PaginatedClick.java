@@ -1,5 +1,6 @@
 package com.youtube.hempfest.paginatedmenu;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -30,6 +31,7 @@ public class PaginatedClick {
 	}
 
 	public void refresh() {
+		builder.inv = Bukkit.createInventory(null, 54, builder.title);
 		p.openInventory(builder.adjust().getInventory());
 	}
 

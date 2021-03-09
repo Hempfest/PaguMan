@@ -1,6 +1,7 @@
 package com.youtube.hempfest.paginatedmenu;
 
 import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
@@ -13,6 +14,7 @@ public final class PaginatedMenu {
 	}
 
 	public void open(Player p) {
+		builder.inv = Bukkit.createInventory(null, 54, builder.title);
 		p.openInventory(builder.adjust().getInventory());
 	}
 

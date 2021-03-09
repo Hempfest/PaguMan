@@ -22,28 +22,29 @@ import org.bukkit.plugin.Plugin;
 
 public final class PaginatedBuilder {
 
-	private final Inventory inv;
-	private final Plugin plugin;
-	private int amountPer;
-	private int index;
-	private int page;
-	private final UUID id;
-	private LinkedList<String> collection;
+	protected Inventory inv;
+	protected final Plugin plugin;
+	protected int amountPer;
+	protected int index;
+	protected int page;
+	protected final UUID id;
+	protected final String title;
+	protected LinkedList<String> collection;
 	protected ItemStack border;
 	protected ItemStack fill;
-	private final Map<ItemStack, Integer> navLeft = new HashMap<>();
-	private final Map<ItemStack, Integer> navRight = new HashMap<>();
-	private final Map<ItemStack, Integer> navBack = new HashMap<>();
-	private final PaginatedListener listener;
-	private final NamespacedKey key;
+	protected final Map<ItemStack, Integer> navLeft = new HashMap<>();
+	protected final Map<ItemStack, Integer> navRight = new HashMap<>();
+	protected final Map<ItemStack, Integer> navBack = new HashMap<>();
+	protected final PaginatedListener listener;
+	protected final NamespacedKey key;
 	protected final LinkedList<ItemStack> contents = new LinkedList<>();
 	protected final Map<ItemStack, InventoryClick> actions = new HashMap<>();
 
 	public PaginatedBuilder(Plugin plugin, String title) {
+		this.title = title;
 		this.plugin = plugin;
 		this.id = UUID.randomUUID();
 		key = new NamespacedKey(plugin, "paginated_utility_manager");
-		this.inv = Bukkit.createInventory(null, 54, title);
 		listener = new PaginatedListener(this);
 		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	}
@@ -67,7 +68,6 @@ public final class PaginatedBuilder {
 	}
 
 	protected PaginatedBuilder adjust() {
-		inv.clear();
 		if (border != null) {
 			int j;
 			for (j = 0; j < 10; j++) {
