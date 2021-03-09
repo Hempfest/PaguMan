@@ -195,17 +195,17 @@ public final class PaginatedBuilder {
 						} else {
 							builder.page -= 1;
 							builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), e.getCurrentItem()));
-							e.setCancelled(true);
 						}
+						e.setCancelled(true);
 					}
 					if (builder.navRight.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
 						if (!((builder.index + 1) >= builder.collection.size())) {
 							builder.page += 1;
 							builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), e.getCurrentItem()));
-							e.setCancelled(true);
 						} else {
 							p.sendMessage("Already on last page.");
 						}
+						e.setCancelled(true);
 					}
 				}
 			}

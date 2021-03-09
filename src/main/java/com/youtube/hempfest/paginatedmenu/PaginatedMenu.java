@@ -1,5 +1,6 @@
 package com.youtube.hempfest.paginatedmenu;
 
+import java.util.UUID;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
@@ -17,6 +18,10 @@ public final class PaginatedMenu {
 
 	public void unregister() {
 		HandlerList.unregisterAll(builder.getListener());
+	}
+
+	public UUID getId() {
+		return builder.getId();
 	}
 
 }
