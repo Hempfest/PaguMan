@@ -67,6 +67,7 @@ public final class PaginatedBuilder {
 	}
 
 	protected PaginatedBuilder adjust() {
+		inv.clear();
 		if (border != null) {
 			int j;
 			for (j = 0; j < 10; j++) {
@@ -115,8 +116,8 @@ public final class PaginatedBuilder {
 					Bukkit.getPluginManager().callEvent(event);
 					if (!contents.contains(event.getItem())) {
 						contents.add(event.getItem());
-						inv.addItem(event.getItem());
 					}
+					inv.addItem(event.getItem());
 				}
 			}
 		}
