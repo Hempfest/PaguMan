@@ -14,11 +14,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public final class PaginatedBuilder {
 
@@ -117,7 +120,12 @@ public final class PaginatedBuilder {
 					if (!contents.contains(event.getItem())) {
 						contents.add(event.getItem());
 					}
-					inv.addItem(event.getItem());
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							inv.addItem(event.getItem());
+						}
+					}.runTaskLater(plugin, 1);
 				}
 			}
 		}
@@ -195,6 +203,18 @@ public final class PaginatedBuilder {
 				item.setItemMeta(meta);
 				return item;
 			});
+		}
+
+		@EventHandler
+		public void onClose(InventoryCloseEvent e) {
+			if (!(e.getPlayer() instanceof  Player))
+				return;
+			if (e.getView().getTopInventory().getSize() < 54)
+				return;
+			if (builder.getInventory() == e.getInventory()) {
+				builder.page = 0;
+				builder.index = 0;
+			}
 		}
 
 		@EventHandler(priority = EventPriority.NORMAL)
