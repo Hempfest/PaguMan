@@ -29,9 +29,11 @@ public final class PaginatedBuilder {
 	private int page;
 	private final UUID id;
 	private LinkedList<String> collection;
-	private Map<ItemStack, Integer> navLeft = new HashMap<>();
-	private Map<ItemStack, Integer> navRight = new HashMap<>();
-	private Map<ItemStack, Integer> navBack = new HashMap<>();
+	protected ItemStack border;
+	protected ItemStack fill;
+	private final Map<ItemStack, Integer> navLeft = new HashMap<>();
+	private final Map<ItemStack, Integer> navRight = new HashMap<>();
+	private final Map<ItemStack, Integer> navBack = new HashMap<>();
 	private final PaginatedListener listener;
 	private final NamespacedKey key;
 	protected final LinkedList<ItemStack> contents = new LinkedList<>();
@@ -78,6 +80,29 @@ public final class PaginatedBuilder {
 						item = new ItemStack(Material.valueOf("PLAYER_HEAD"));
 					} else {
 						item = new ItemStack(Material.valueOf("SKULL_ITEM"));
+					}
+					if (border != null) {
+						int j;
+						for (j = 0; j < 10; j++) {
+							if (inv.getItem(j) == null)
+								inv.setItem(j, border);
+						}
+						inv.setItem(17, border);
+						inv.setItem(18, border);
+						inv.setItem(26, border);
+						inv.setItem(27, border);
+						inv.setItem(35, border);
+						inv.setItem(36, border);
+						for (j = 44; j < 54; j++) {
+							if (inv.getItem(j) == null)
+								inv.setItem(j, border);
+						}
+						if (fill != null) {
+							for (int k = 0; k < 54; k++) {
+								if (inv.getItem(k) == null)
+									inv.setItem(k, fill);
+							}
+						}
 					}
 					ItemStack left = navLeft.keySet().stream().findFirst().orElse(null);
 					ItemStack right = navRight.keySet().stream().findFirst().orElse(null);
