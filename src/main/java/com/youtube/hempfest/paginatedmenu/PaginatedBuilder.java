@@ -171,12 +171,27 @@ public final class PaginatedBuilder {
 				Player p = (Player) e.getWhoClicked();
 				if (e.getCurrentItem() != null) {
 					ItemStack item = e.getCurrentItem();
-					if (builder.contents.stream().anyMatch(i -> i.equals(item)) ||
-							builder.navLeft.keySet().stream().anyMatch(i -> i.isSimilar(item)) ||
-							builder.navRight.keySet().stream().anyMatch(i -> i.isSimilar(item)) ||
-							builder.navBack.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
-						builder.actions.get(item).clickEvent(new PaginatedClick(p, e.getView(), e.getCurrentItem()));
+					if (builder.contents.stream().anyMatch(i -> i.equals(item)) || builder.navBack.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
+						builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), e.getCurrentItem()));
 						e.setCancelled(true);
+					}
+					if (builder.navLeft.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
+						if (builder.page == 0) {
+							p.sendMessage("Already on first page.");
+						} else {
+							builder.page -= 1;
+							builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), e.getCurrentItem()));
+							e.setCancelled(true);
+						}
+					}
+					if (builder.navRight.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
+						if (!((builder.index + 1) >= builder.collection.size())) {
+							builder.page += 1;
+							builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), e.getCurrentItem()));
+							e.setCancelled(true);
+						} else {
+							p.sendMessage("Already on last page.");
+						}
 					}
 				}
 			}

@@ -12,13 +12,14 @@ public class PaginatedClick {
 
 	private final ItemStack clickedItem;
 
-	protected PaginatedClick(Player p, InventoryView view, ItemStack item) {
+	private final PaginatedBuilder builder;
+
+	protected PaginatedClick(PaginatedBuilder builder, Player p, InventoryView view, ItemStack item) {
+		this.builder = builder;
 		this.p = p;
 		this.view = view;
 		this.clickedItem = item;
 	}
-
-
 
 	public ItemStack getClickedItem() {
 		return clickedItem;
@@ -26,6 +27,10 @@ public class PaginatedClick {
 
 	public Player getPlayer() {
 		return p;
+	}
+
+	public void refresh() {
+		p.openInventory(builder.adjust().getInventory());
 	}
 
 	public InventoryView getView() {
