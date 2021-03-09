@@ -16,7 +16,7 @@ public final class PaginatedMenu {
 	}
 
 	public void unregister() {
-		HandlerList.unregisterAll(PaginatedBuilder.getListener());
+		HandlerList.unregisterAll(builder.getListener());
 	}
 
 }

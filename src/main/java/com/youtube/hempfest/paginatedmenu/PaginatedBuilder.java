@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
@@ -28,23 +27,23 @@ public final class PaginatedBuilder {
 	private int amountPer;
 	private int index;
 	private int page;
+	private final UUID id;
 	private LinkedList<String> collection;
 	private Map<ItemStack, Integer> navLeft = new HashMap<>();
 	private Map<ItemStack, Integer> navRight = new HashMap<>();
 	private Map<ItemStack, Integer> navBack = new HashMap<>();
-	public static PaginatedListener listener;
+	private final PaginatedListener listener;
 	private final NamespacedKey key;
 	protected final LinkedList<ItemStack> contents = new LinkedList<>();
 	protected final Map<ItemStack, InventoryClick> actions = new HashMap<>();
 
 	public PaginatedBuilder(Plugin plugin, String title) {
 		this.plugin = plugin;
+		this.id = UUID.randomUUID();
 		key = new NamespacedKey(plugin, "paginated_utility_manager");
 		this.inv = Bukkit.createInventory(null, 54, title);
-		if (listener == null) {
-			listener = new PaginatedListener(this);
-			Bukkit.getPluginManager().registerEvents(listener, plugin);
-		}
+		listener = new PaginatedListener(this);
+		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	}
 
 	public PaginatedBuilder collect(LinkedList<String> collection) {
@@ -57,45 +56,49 @@ public final class PaginatedBuilder {
 		return this;
 	}
 
+	public UUID getId() {
+		return id;
+	}
+
 	protected PaginatedBuilder adjust() {
-			//addMenuBorder();
+		//addMenuBorder();
 		if (collection == null) {
 			collection = new LinkedList<>();
 		}
 		LinkedList<String> members = collection;
-			if (!members.isEmpty()) {
-				for (int i = 0; i < amountPer; i++) {
-					index = amountPer * page + i;
-					if (index >= members.size())
-						break;
-					if (members.get(index) != null) {
-						boolean isNew = Arrays.stream(Material.values()).map(Material::name).collect(Collectors.toList()).contains("PLAYER_HEAD");
-						ItemStack item;
-						if (isNew) {
-							item = new ItemStack(Material.valueOf("PLAYER_HEAD"));
-						} else {
-							item = new ItemStack(Material.valueOf("SKULL_ITEM"));
+		if (!members.isEmpty()) {
+			for (int i = 0; i < amountPer; i++) {
+				index = amountPer * page + i;
+				if (index >= members.size())
+					break;
+				if (members.get(index) != null) {
+					boolean isNew = Arrays.stream(Material.values()).map(Material::name).collect(Collectors.toList()).contains("PLAYER_HEAD");
+					ItemStack item;
+					if (isNew) {
+						item = new ItemStack(Material.valueOf("PLAYER_HEAD"));
+					} else {
+						item = new ItemStack(Material.valueOf("SKULL_ITEM"));
+					}
+					ItemStack left = navLeft.keySet().stream().findFirst().orElse(null);
+					ItemStack right = navRight.keySet().stream().findFirst().orElse(null);
+					ItemStack back = navBack.keySet().stream().findFirst().orElse(null);
+					if (left != null) {
+						if (!inv.contains(left)) {
+							inv.setItem(navLeft.get(left), left);
+							inv.setItem(navRight.get(right), right);
+							inv.setItem(navBack.get(back), back);
 						}
-						ItemStack left = navLeft.keySet().stream().findFirst().orElse(null);
-						ItemStack right = navRight.keySet().stream().findFirst().orElse(null);
-						ItemStack back = navBack.keySet().stream().findFirst().orElse(null);
-						if (left != null) {
-							if (!inv.contains(left)) {
-								inv.setItem(navLeft.get(left), left);
-								inv.setItem(navRight.get(right), right);
-								inv.setItem(navBack.get(back), back);
-							}
-						}
-						SyncMenuItemFillingEvent event = new SyncMenuItemFillingEvent(this, members.get(index), item);
-						Bukkit.getPluginManager().callEvent(event);
-						if (!contents.contains(event.getItem())) {
-							contents.add(event.getItem());
-							inv.addItem(event.getItem());
-						}
+					}
+					SyncMenuItemFillingEvent event = new SyncMenuItemFillingEvent(this, members.get(index), item);
+					Bukkit.getPluginManager().callEvent(event);
+					if (!contents.contains(event.getItem())) {
+						contents.add(event.getItem());
+						inv.addItem(event.getItem());
 					}
 				}
 			}
-			//setFillerGlass();
+		}
+		//setFillerGlass();
 		return this;
 	}
 
@@ -125,7 +128,7 @@ public final class PaginatedBuilder {
 		return inv;
 	}
 
-	public static PaginatedListener getListener() {
+	public PaginatedListener getListener() {
 		return listener;
 	}
 
