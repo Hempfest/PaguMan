@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
@@ -75,12 +76,22 @@ public final class PaginatedBuilder {
 						} else {
 							item = new ItemStack(Material.valueOf("SKULL_ITEM"));
 						}
+						ItemStack left = navLeft.keySet().stream().findFirst().orElse(null);
+						ItemStack right = navRight.keySet().stream().findFirst().orElse(null);
+						ItemStack back = navBack.keySet().stream().findFirst().orElse(null);
+						if (left != null) {
+							if (!inv.contains(left)) {
+								inv.setItem(navLeft.get(left), left);
+								inv.setItem(navRight.get(right), right);
+								inv.setItem(navBack.get(back), back);
+							}
+						}
 						SyncMenuItemFillingEvent event = new SyncMenuItemFillingEvent(this, members.get(index), item);
 						Bukkit.getPluginManager().callEvent(event);
 						if (!contents.contains(event.getItem())) {
 							contents.add(event.getItem());
+							inv.addItem(event.getItem());
 						}
-						inv.addItem(event.getItem());
 					}
 				}
 			}
