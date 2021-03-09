@@ -28,6 +28,9 @@ public final class PaginatedBuilder {
 	private int index;
 	private int page;
 	private LinkedList<String> collection;
+	private Map<ItemStack, Integer> navLeft = new HashMap<>();
+	private Map<ItemStack, Integer> navRight = new HashMap<>();
+	private Map<ItemStack, Integer> navBack = new HashMap<>();
 	public static PaginatedListener listener;
 	private final NamespacedKey key;
 	protected final LinkedList<ItemStack> contents = new LinkedList<>();
@@ -82,6 +85,24 @@ public final class PaginatedBuilder {
 				}
 			}
 			//setFillerGlass();
+		return this;
+	}
+
+	public PaginatedBuilder setNavigationLeft(ItemStack item, int slot, InventoryClick click) {
+		this.navLeft.putIfAbsent(item, slot);
+		this.actions.putIfAbsent(item, click);
+		return this;
+	}
+
+	public PaginatedBuilder setNavigationRight(ItemStack item, int slot, InventoryClick click) {
+		this.navRight.putIfAbsent(item, slot);
+		this.actions.putIfAbsent(item, click);
+		return this;
+	}
+
+	public PaginatedBuilder setNavigationBack(ItemStack item, int slot, InventoryClick click) {
+		this.navBack.putIfAbsent(item, slot);
+		this.actions.putIfAbsent(item, click);
 		return this;
 	}
 
@@ -148,10 +169,15 @@ public final class PaginatedBuilder {
 
 			if (e.getClickedInventory() == e.getInventory()) {
 				Player p = (Player) e.getWhoClicked();
-				if (e.getCurrentItem() != null && builder.contents.stream().anyMatch(i -> i.equals(e.getCurrentItem()))) {
+				if (e.getCurrentItem() != null) {
 					ItemStack item = e.getCurrentItem();
-					builder.actions.get(item).clickEvent(new PaginatedClick(p, e.getView(), e.getCurrentItem()));
-					e.setCancelled(true);
+					if (builder.contents.stream().anyMatch(i -> i.equals(item)) ||
+							builder.navLeft.keySet().stream().anyMatch(i -> i.isSimilar(item)) ||
+							builder.navRight.keySet().stream().anyMatch(i -> i.isSimilar(item)) ||
+							builder.navBack.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
+						builder.actions.get(item).clickEvent(new PaginatedClick(p, e.getView(), e.getCurrentItem()));
+						e.setCancelled(true);
+					}
 				}
 			}
 
