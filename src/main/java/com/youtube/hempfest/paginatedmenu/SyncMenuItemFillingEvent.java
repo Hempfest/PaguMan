@@ -37,6 +37,10 @@ public class SyncMenuItemFillingEvent extends Event {
 		return item;
 	}
 
+	public UUID getId() {
+		return builder.getId();
+	}
+
 	public ActionBuilder action() {
 		return new ActionBuilder(item, builder);
 	}
