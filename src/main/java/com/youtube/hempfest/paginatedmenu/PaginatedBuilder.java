@@ -131,8 +131,15 @@ public final class PaginatedBuilder {
 		}
 		if (fill != null) {
 			for (int k = 0; k < 54; k++) {
-				if (inv.getItem(k) == null)
-					inv.setItem(k, fill);
+				if (inv.getItem(k) == null) {
+					int finalK = k;
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							inv.setItem(finalK, fill);
+						}
+					}.runTaskLater(plugin, 1);
+				}
 			}
 		}
 		return this;
