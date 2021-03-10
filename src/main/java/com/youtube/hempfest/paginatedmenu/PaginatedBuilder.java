@@ -48,8 +48,6 @@ public final class PaginatedBuilder {
 		this.plugin = plugin;
 		this.id = UUID.randomUUID();
 		key = new NamespacedKey(plugin, "paginated_utility_manager");
-		listener = new PaginatedListener(this);
-		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	}
 
 	public PaginatedBuilder(Plugin plugin, String title) {
