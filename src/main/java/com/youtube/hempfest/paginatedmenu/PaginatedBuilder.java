@@ -158,10 +158,10 @@ public final class PaginatedBuilder {
 											inv.setItem(finalI, fill);
 										}
 									}
-								}.runTask(plugin);
+								}.runTaskAsynchronously(plugin);
 							}
 						}
-					}.runTask(plugin);
+					}.runTaskAsynchronously(plugin);
 				}
 			}
 		}
@@ -267,7 +267,7 @@ public final class PaginatedBuilder {
 				Player p = (Player) e.getWhoClicked();
 				if (e.getCurrentItem() != null) {
 					ItemStack item = e.getCurrentItem();
-					if (builder.contents.stream().anyMatch(i -> i.equals(item) || i.isSimilar(item)) || builder.navBack.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
+					if (builder.contents.contains(item) || builder.contents.stream().anyMatch(i -> i.getType() == item.getType()) || builder.navBack.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
 						builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), item));
 						e.setCancelled(true);
 					}
