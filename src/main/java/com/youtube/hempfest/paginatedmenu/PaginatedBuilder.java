@@ -39,7 +39,7 @@ public final class PaginatedBuilder {
 	protected final Map<ItemStack, Integer> navLeft = new HashMap<>();
 	protected final Map<ItemStack, Integer> navRight = new HashMap<>();
 	protected final Map<ItemStack, Integer> navBack = new HashMap<>();
-	protected final PaginatedListener listener;
+	protected PaginatedListener listener;
 	protected final NamespacedKey key;
 	protected final LinkedList<ItemStack> contents = new LinkedList<>();
 	protected final Map<ItemStack, InventoryClick> actions = new HashMap<>();
@@ -57,8 +57,6 @@ public final class PaginatedBuilder {
 		this.plugin = plugin;
 		this.id = UUID.randomUUID();
 		key = new NamespacedKey(plugin, "paginated_utility_manager");
-		listener = new PaginatedListener(this);
-		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	}
 
 	public PaginatedBuilder setTitle(String title) {
@@ -146,10 +144,10 @@ public final class PaginatedBuilder {
 					new BukkitRunnable() {
 						@Override
 						public void run() {
+							inv.addItem(event.getItem());
 							if (!contents.contains(event.getItem())) {
 								contents.add(event.getItem());
 							}
-							inv.addItem(event.getItem());
 							if (fill != null) {
 								new BukkitRunnable() {
 									@Override
@@ -164,6 +162,10 @@ public final class PaginatedBuilder {
 					}.runTask(plugin);
 				}
 			}
+		}
+		if (listener == null) {
+			listener = new PaginatedListener(this);
+			Bukkit.getPluginManager().registerEvents(listener, plugin);
 		}
 		return this;
 	}
@@ -235,7 +237,7 @@ public final class PaginatedBuilder {
 			});
 		}
 
-		@EventHandler
+		@EventHandler(priority = EventPriority.NORMAL)
 		public void onClose(InventoryCloseEvent e) {
 			if (!(e.getPlayer() instanceof Player))
 				return;
@@ -269,7 +271,7 @@ public final class PaginatedBuilder {
 					}
 					if (builder.navLeft.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
 						if (builder.page == 0) {
-							p.sendMessage("Already on first page.");
+							p.sendMessage(builder.alreadyFirstPage);
 						} else {
 							builder.page -= 1;
 							builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), item));
@@ -281,7 +283,7 @@ public final class PaginatedBuilder {
 							builder.page += 1;
 							builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), item));
 						} else {
-							p.sendMessage("Already on last page.");
+							p.sendMessage(builder.alreadyLastPage);
 						}
 						e.setCancelled(true);
 					}
