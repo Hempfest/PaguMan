@@ -6,7 +6,7 @@
 
     <groupId>com.youtube.hempfest</groupId>
     <artifactId>paginated-menu</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>PaguMan</name>

@@ -30,7 +30,9 @@ public final class PaginatedBuilder {
 	protected int index;
 	protected int page;
 	protected final UUID id;
-	protected final String title;
+	protected String title;
+	protected String alreadyFirstPage;
+	protected String alreadyLastPage;
 	protected LinkedList<String> collection;
 	protected ItemStack border;
 	protected ItemStack fill;
@@ -42,6 +44,14 @@ public final class PaginatedBuilder {
 	protected final LinkedList<ItemStack> contents = new LinkedList<>();
 	protected final Map<ItemStack, InventoryClick> actions = new HashMap<>();
 
+	public PaginatedBuilder(Plugin plugin) {
+		this.plugin = plugin;
+		this.id = UUID.randomUUID();
+		key = new NamespacedKey(plugin, "paginated_utility_manager");
+		listener = new PaginatedListener(this);
+		Bukkit.getPluginManager().registerEvents(listener, plugin);
+	}
+
 	public PaginatedBuilder(Plugin plugin, String title) {
 		this.title = title;
 		this.plugin = plugin;
@@ -51,6 +61,11 @@ public final class PaginatedBuilder {
 		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	}
 
+	public PaginatedBuilder setTitle(String title) {
+		this.title = title.replace("{PAGE}", "" + page);
+		return this;
+	}
+
 	public PaginatedBuilder collect(LinkedList<String> collection) {
 		this.collection = collection;
 		return this;
@@ -58,6 +73,16 @@ public final class PaginatedBuilder {
 
 	public PaginatedBuilder limit(int amountPer) {
 		this.amountPer = amountPer;
+		return this;
+	}
+
+	public PaginatedBuilder setAlreadyFirst(String context) {
+		this.alreadyFirstPage = context.replace("{PAGE}", "" + page);
+		return this;
+	}
+
+	public PaginatedBuilder setAlreadyLast(String context) {
+		this.alreadyLastPage = context.replace("{PAGE}", "" + page);;
 		return this;
 	}
 
@@ -116,14 +141,14 @@ public final class PaginatedBuilder {
 					}
 					SyncMenuItemFillingEvent event = new SyncMenuItemFillingEvent(this, members.get(index), item);
 					Bukkit.getPluginManager().callEvent(event);
-					if (!contents.contains(event.getItem())) {
-						contents.add(event.getItem());
-					}
 
 					int finalI = i;
 					new BukkitRunnable() {
 						@Override
 						public void run() {
+							if (!contents.contains(event.getItem())) {
+								contents.add(event.getItem());
+							}
 							inv.addItem(event.getItem());
 							if (fill != null) {
 								new BukkitRunnable() {
@@ -133,7 +158,7 @@ public final class PaginatedBuilder {
 											inv.setItem(finalI, fill);
 										}
 									}
-								}.runTaskLater(plugin, 1);
+								}.runTask(plugin);
 							}
 						}
 					}.runTask(plugin);
@@ -239,7 +264,7 @@ public final class PaginatedBuilder {
 				if (e.getCurrentItem() != null) {
 					ItemStack item = e.getCurrentItem();
 					if (builder.contents.stream().anyMatch(i -> i.equals(item)) || builder.navBack.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
-						builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), e.getCurrentItem()));
+						builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), item));
 						e.setCancelled(true);
 					}
 					if (builder.navLeft.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
@@ -247,20 +272,20 @@ public final class PaginatedBuilder {
 							p.sendMessage("Already on first page.");
 						} else {
 							builder.page -= 1;
-							builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), e.getCurrentItem()));
+							builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), item));
 						}
 						e.setCancelled(true);
 					}
 					if (builder.navRight.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
 						if (!((builder.index + 1) >= builder.collection.size())) {
 							builder.page += 1;
-							builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), e.getCurrentItem()));
+							builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), item));
 						} else {
 							p.sendMessage("Already on last page.");
 						}
 						e.setCancelled(true);
 					}
-					if (e.getCurrentItem().equals(builder.border) || e.getCurrentItem().equals(builder.fill)) {
+					if (e.getCurrentItem().equals(builder.border) || item.equals(builder.fill)) {
 						e.setCancelled(true);
 					}
 				}
