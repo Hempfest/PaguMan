@@ -124,21 +124,21 @@ public final class PaginatedBuilder {
 						@Override
 						public void run() {
 							inv.addItem(event.getItem());
+							if (fill != null) {
+								for (int k = 0; k < 54; k++) {
+									if (inv.getItem(k) == null) {
+										int finalK = k;
+										new BukkitRunnable() {
+											@Override
+											public void run() {
+												inv.setItem(finalK, fill);
+											}
+										}.runTaskLater(plugin, 1);
+									}
+								}
+							}
 						}
 					}.runTask(plugin);
-				}
-			}
-		}
-		if (fill != null) {
-			for (int k = 0; k < 54; k++) {
-				if (inv.getItem(k) == null) {
-					int finalK = k;
-					new BukkitRunnable() {
-						@Override
-						public void run() {
-							inv.setItem(finalK, fill);
-						}
-					}.runTaskLater(plugin, 1);
 				}
 			}
 		}
