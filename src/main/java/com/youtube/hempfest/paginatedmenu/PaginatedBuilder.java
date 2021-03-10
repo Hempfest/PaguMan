@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
@@ -83,7 +82,8 @@ public final class PaginatedBuilder {
 	}
 
 	public PaginatedBuilder setAlreadyLast(String context) {
-		this.alreadyLastPage = context.replace("{PAGE}", "" + page);;
+		this.alreadyLastPage = context.replace("{PAGE}", "" + page);
+		;
 		return this;
 	}
 
@@ -268,11 +268,13 @@ public final class PaginatedBuilder {
 				Player p = (Player) e.getWhoClicked();
 				if (e.getCurrentItem() != null) {
 					ItemStack item = e.getCurrentItem();
-					if (item.hasItemMeta()) {
-						if (builder.contents.stream().map(ItemStack::getItemMeta).filter(Objects::nonNull).map(ItemMeta::getDisplayName).collect(Collectors.toList()).contains(item.getItemMeta().getDisplayName()) || builder.navBack.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
-							builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), item));
-							e.setCancelled(true);
-						}
+					if (builder.contents.contains(item)) {
+						builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), item));
+						e.setCancelled(true);
+					}
+					if (builder.navBack.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
+						builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), item));
+						e.setCancelled(true);
 					}
 					if (builder.navLeft.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
 						if (builder.page == 0) {
