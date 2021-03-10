@@ -14,7 +14,7 @@ public final class PaginatedMenu {
 	}
 
 	public void open(Player p) {
-		builder.inv = Bukkit.createInventory(null, 54, builder.title);
+		builder.inv = Bukkit.createInventory(null, 54, builder.title.replace("{PAGE}", "" + (builder.page + 1)).replace("{MAX}", "" + builder.getMaxPages()));
 		p.openInventory(builder.adjust().getInventory());
 	}
 

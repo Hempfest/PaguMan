@@ -39,7 +39,7 @@ public final class PaginatedBuilder {
 	protected final Map<ItemStack, Integer> navLeft = new HashMap<>();
 	protected final Map<ItemStack, Integer> navRight = new HashMap<>();
 	protected final Map<ItemStack, Integer> navBack = new HashMap<>();
-	protected PaginatedListener listener;
+	protected final PaginatedListener listener;
 	protected final NamespacedKey key;
 	protected final LinkedList<ItemStack> contents = new LinkedList<>();
 	protected final Map<ItemStack, InventoryClick> actions = new HashMap<>();
@@ -48,6 +48,8 @@ public final class PaginatedBuilder {
 		this.plugin = plugin;
 		this.id = UUID.randomUUID();
 		key = new NamespacedKey(plugin, "paginated_utility_manager");
+		listener = new PaginatedListener(this);
+		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	}
 
 	public PaginatedBuilder(Plugin plugin, String title) {
@@ -55,6 +57,8 @@ public final class PaginatedBuilder {
 		this.plugin = plugin;
 		this.id = UUID.randomUUID();
 		key = new NamespacedKey(plugin, "paginated_utility_manager");
+		listener = new PaginatedListener(this);
+		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	}
 
 	public PaginatedBuilder setTitle(String title) {
@@ -161,10 +165,6 @@ public final class PaginatedBuilder {
 				}
 			}
 		}
-		if (listener == null) {
-			listener = new PaginatedListener(this);
-			Bukkit.getPluginManager().registerEvents(listener, plugin);
-		}
 		return this;
 	}
 
@@ -200,6 +200,10 @@ public final class PaginatedBuilder {
 
 	public int getAmountPerPage() {
 		return amountPer;
+	}
+
+	public int getMaxPages() {
+		return (collection.size() / (amountPer - 1)) < 0 ? collection.size() / amountPer : collection.size() / amountPer - 1;
 	}
 
 	public NamespacedKey getKey() {
@@ -263,7 +267,7 @@ public final class PaginatedBuilder {
 				Player p = (Player) e.getWhoClicked();
 				if (e.getCurrentItem() != null) {
 					ItemStack item = e.getCurrentItem();
-					if (builder.contents.stream().anyMatch(i -> i.equals(item)) || builder.navBack.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
+					if (builder.contents.stream().anyMatch(i -> i.equals(item) || i.isSimilar(item)) || builder.navBack.keySet().stream().anyMatch(i -> i.isSimilar(item))) {
 						builder.actions.get(item).clickEvent(new PaginatedClick(builder, p, e.getView(), item));
 						e.setCancelled(true);
 					}
